@@ -1,0 +1,47 @@
+name: Release Obsidian plugin
+
+on:
+  push:
+    tags:
+      - "*"
+
+env:
+  PLUGIN_NAME: memos-ai-sync
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 获取所有历史记录和标签
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18.x"
+          cache: 'npm'
+
+      - name: Build plugin
+        run: |
+          npm install
+          # 设置环境变量确保完整打包
+          NODE_ENV=production npm run build
+
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${GITHUB_REF#refs/tags/}"
+          
+          # 如果release已存在，先删除
+          gh release delete "$tag" --yes || true
+          
+          # 创建新的release
+          gh release create "$tag" \
+            --title="$tag" \
+            --draft=false \
+            --notes="Release $tag" \
+            --target main \
+            main.js manifest.json styles.css versions.json README.md README_EN.md LICENSE
