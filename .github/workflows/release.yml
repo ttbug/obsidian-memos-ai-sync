@@ -11,6 +11,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -44,4 +46,5 @@ jobs:
             --draft=false \
             --notes="Release $tag" \
             --target main \
+
             main.js manifest.json styles.css versions.json README.md README_EN.md LICENSE
