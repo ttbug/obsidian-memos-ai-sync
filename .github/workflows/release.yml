@@ -47,4 +47,5 @@ jobs:
             --notes="Release $tag" \
             --target main \
 
-            main.js manifest.json styles.css versions.json README.md README_EN.md LICENSE
+            main.ts manifest.json styles.css versions.json README.md README_EN.md LICENSE
+
