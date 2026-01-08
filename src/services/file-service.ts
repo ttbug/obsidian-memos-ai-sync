@@ -93,6 +93,18 @@ export class FileService {
         return preview;
     }
 
+    private extractTitle(content: string): string | null {
+        const lines = content.split('\n');
+        const firstLine = lines[0].trim();
+
+        // 如果第一行是标题格式（# 开头），提取标题文本
+        if (firstLine.startsWith('# ')) {
+            return firstLine.slice(2).trim();
+        }
+
+        return null;
+    }
+
     private async getMemoFiles(): Promise<string[]> {
         const files: string[] = [];
         const processDirectory = async (dirPath: string) => {
@@ -144,12 +156,15 @@ export class FileService {
             
             await this.ensureDirectoryExists(yearDir);
             await this.ensureDirectoryExists(monthDir);
-            
-            const contentPreview = memo.content 
-                ? this.getContentPreview(memo.content)
-                : this.sanitizeFileName(memo.name.replace('memos/', ''));
-            
-            const fileName = this.sanitizeFileName(`${contentPreview}.md`);
+
+            // 优先使用内容中的标题作为文件名
+            let fileTitle = this.extractTitle(memo.content || '');
+            if (!fileTitle) {
+                // 如果没有标题，使用 memo name 作为文件名
+                fileTitle = this.sanitizeFileName(memo.name.replace('memos/', ''));
+            }
+
+            const fileName = this.sanitizeFileName(`${fileTitle}.md`);
             const filePath = `${monthDir}/${fileName}`;
             
             let content = memo.content || '';
