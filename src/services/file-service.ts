@@ -149,8 +149,7 @@ export class FileService {
                 ? this.getContentPreview(memo.content)
                 : this.sanitizeFileName(memo.name.replace('memos/', ''));
             
-            const timeStr = this.formatDateTime(date, 'filename');
-            const fileName = this.sanitizeFileName(`${contentPreview} (${timeStr}).md`);
+            const fileName = this.sanitizeFileName(`${contentPreview}.md`);
             const filePath = `${monthDir}/${fileName}`;
             
             let content = memo.content || '';
